@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>📔 我们的日常</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet" />
+
+  <style>
+    :root{
+      --bg0:#fff7fb;
+      --bg1:#fffdf3;
+      --ink:#1b1b1f;
+      --muted:rgba(27,27,31,.66);
+
+      --card:#ffffffcc;
+      --stroke:rgba(27,27,31,.10);
+      --shadow: 0 18px 60px rgba(20, 10, 18, .10);
+      --shadow2: 0 24px 80px rgba(20, 10, 18, .14);
+
+      --accent:#ff5aa5;
+      --accent2:#7b61ff;
+      --cream:#fff2d8;
+
+      --r20:20px;
+      --r28:28px;
+      --r999:999px;
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      color:var(--ink);
+      font-family: "Poppins", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(1200px 800px at 15% 10%, #ffd7ea 0%, transparent 60%),
+        radial-gradient(900px 700px at 85% 20%, #fff0c7 0%, transparent 60%),
+        radial-gradient(1000px 700px at 50% 100%, #e9e5ff 0%, transparent 55%),
+        linear-gradient(180deg, var(--bg0), var(--bg1));
+      overflow-x:hidden;
+    }
+
+    /* 轻微噪点纹理（避免背景单调） */
+    body::before{
+      content:"";
+      position:fixed; inset:0;
+      pointer-events:none;
+      opacity:.06;
+      mix-blend-mode:multiply;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.8'/%3E%3C/svg%3E");
+      background-size:220px 220px;
+    }
+
+    /* 平滑滚动（配合轻微滚动动画） */
+    html{ scroll-behavior:smooth; }
+
+    .wrap{
+      width:min(1120px, calc(100% - 40px));
+      margin: 26px auto 80px;
+      position:relative;
+    }
+
+    header{
+      position:sticky;
+      top:0;
+      z-index:10;
+      padding: 18px 0 12px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      background: linear-gradient(180deg, rgba(255,255,255,.62), rgba(255,255,255,.20));
+      border-bottom: 1px solid rgba(255,255,255,.45);
+    }
+
+    .hero{
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:16px;
+    }
+
+    .hero-left{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      padding: 10px 0 6px;
+    }
+
+    .kicker{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-size:13px;
+      color:var(--muted);
+      letter-spacing:.2px;
+      user-select:none;
+    }
+    .kicker .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 7px 12px;
+      border-radius: var(--r999);
+      background: rgba(255,255,255,.66);
+      border: 1px solid rgba(27,27,31,.08);
+      box-shadow: 0 10px 30px rgba(20,10,18,.06);
+    }
+
+    /* 可自定义文案：WELCOME_TEXT */
+    h1{
+      margin:0;
+      font-family: "Lora", serif;
+      font-weight:600;
+      letter-spacing:.2px;
+      line-height:1.05;
+      font-size: clamp(26px, 3vw, 40px);
+    }
+
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size: 14px;
+      line-height:1.6;
+    }
+
+    .hero-right{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding-bottom: 6px;
+    }
+
+    .tiny-btn{
+      border: 1px solid rgba(27,27,31,.12);
+      background: rgba(255,255,255,.70);
+      color: rgba(27,27,31,.85);
+      border-radius: var(--r999);
+      padding: 10px 12px;
+      cursor:pointer;
+      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+      box-shadow: 0 10px 30px rgba(20,10,18,.06);
+      user-select:none;
+    }
+    .tiny-btn:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 16px 44px rgba(20,10,18,.10);
+      background: rgba(255,255,255,.86);
+    }
+
+    .hint{
+      display:none;
+      padding: 10px 12px;
+      border-radius: var(--r20);
+      background: rgba(255,255,255,.58);
+      border: 1px dashed rgba(27,27,31,.16);
+      color: rgba(27,27,31,.78);
+      margin-top: 14px;
+      font-size: 13px;
+      line-height:1.7;
+    }
+    .hint strong{ font-weight:600; }
+
+    /* Masonry-ish：列数响应式 + 卡片高度参差 */
+    .grid{
+      margin-top: 18px;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 16px;
+    }
+
+    /* 3~4列桌面（通过 span 控制错落），平板2列，手机1列 */
+    .card{
+      grid-column: span 4;
+      border-radius: var(--r20);
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.5);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+      cursor:pointer;
+      transition: transform .22s cubic-bezier(.2,.9,.2,1), box-shadow .22s ease, filter .22s ease;
+      transform: translateY(10px);
+      opacity:0;
+      will-change: transform, opacity;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .card:hover{
+      transform: translateY(-4px) scale(1.01);
+      box-shadow: var(--shadow2);
+    }
+
+    .card::after{
+      content:"";
+      position:absolute; inset:-1px;
+      border-radius: var(--r20);
+      pointer-events:none;
+      border: 1px solid rgba(27,27,31,.08);
+      opacity:.7;
+    }
+
+    /* 让高度参差但整体整齐 */
+    .card[data-size="tall"] .thumb{ height: 190px; }
+    .card[data-size="medium"] .thumb{ height: 160px; }
+    .card[data-size="short"] .thumb{ height: 130px; }
+
+    .thumb{
+      position:relative;
+      height: 160px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-bottom: 1px solid rgba(27,27,31,.06);
+      background:
+        radial-gradient(220px 140px at 30% 30%, rgba(255,90,165,.20), transparent 60%),
+        radial-gradient(260px 160px at 70% 30%, rgba(123,97,255,.18), transparent 60%),
+        linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,.55));
+    }
+
+    .thumb img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      border-radius: var(--r20);
+      display:block;
+    }
+
+    .card-top-badge{
+      position:absolute;
+      top:12px; right:12px;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      z-index:2;
+    }
+
+    .mini-heart{
+      width:34px; height:34px;
+      border-radius: 12px;
+      display:grid; place-items:center;
+      background: rgba(255,255,255,.70);
+      border: 1px solid rgba(27,27,31,.10);
+      box-shadow: 0 10px 22px rgba(20,10,18,.08);
+      cursor:pointer;
+      transition: transform .18s ease;
+      user-select:none;
+    }
+    .mini-heart:hover{ transform: translateY(-1px) rotate(-3deg); }
+
+    .content{
+      padding: 14px 14px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .title-row{
+      display:flex;
+      align-items:baseline;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .card h3{
+      margin:0;
+      font-size: 16px;
+      font-weight:600;
+      letter-spacing:.2px;
+    }
+
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+      padding: 6px 10px;
+      border-radius: var(--r999);
+      border: 1px solid rgba(27,27,31,.10);
+      background: rgba(255,255,255,.58);
+      color: rgba(27,27,31,.78);
+      font-size: 12px;
+      white-space:nowrap;
+      user-select:none;
+    }
+
+    .desc{
+      margin:0;
+      color: rgba(27,27,31,.72);
+      font-size: 13px;
+      line-height:1.7;
+    }
+
+    .spark{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding-top: 2px;
+    }
+
+    .spark .cta{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding: 10px 12px;
+      border-radius: var(--r999);
+      border: 1px solid rgba(27,27,31,.10);
+      background: rgba(255,255,255,.72);
+      color: rgba(27,27,31,.86);
+      font-size: 13px;
+      cursor:pointer;
+      transition: transform .18s ease, background .18s ease;
+      user-select:none;
+    }
+    .spark .cta:hover{ transform: translateY(-1px); background: rgba(255,255,255,.88); }
+
+    .spark .twinkle{
+      font-size: 12px;
+      color: rgba(255,90,165,.92);
+      letter-spacing:.2px;
+      user-select:none;
+      animation: twinkle 2.2s ease-in-out infinite;
+      white-space:nowrap;
+    }
+
+    @keyframes twinkle{
+      0%,100%{ filter: drop-shadow(0 0 0 rgba(255,90,165,0)); opacity:.75; }
+      50%{ filter: drop-shadow(0 8px 10px rgba(255,90,165,.18)); opacity:1; }
+    }
+
+    /* 滚动淡入动画 */
+    .card.is-visible{
+      opacity:1;
+      transform: translateY(0);
+      transition: opacity .6s ease, transform .6s cubic-bezier(.2,.9,.2,1);
+    }
+
+    /* 响应式 */
+    @media (max-width: 980px){
+      .card{ grid-column: span 6; }
+    }
+    @media (max-width: 640px){
+      .wrap{ width:min(1120px, calc(100% - 26px)); }
+      .hero{ flex-direction:column; align-items:flex-start; }
+      .hero-right{ width:100%; }
+      .tiny-btn{ flex:1; }
+      .card{ grid-column: span 12; }
+    }
+
+    /* Modal */
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:100;
+      padding: 18px;
+    }
+    .modal.is-open{ display:flex; }
+
+    .backdrop{
+      position:absolute; inset:0;
+      background: rgba(15, 8, 14, .35);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: fadeIn .22s ease both;
+    }
+
+    @keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+
+    .dialog{
+      position:relative;
+      width:min(920px, 100%);
+      max-height: min(84vh, 860px);
+      overflow:auto;
+      border-radius: var(--r28);
+      background: rgba(255,255,255,.86);
+      border: 1px solid rgba(255,255,255,.6);
+      box-shadow: 0 30px 120px rgba(10, 6, 10, .22);
+      animation: pop .22s cubic-bezier(.2,.9,.2,1) both;
+    }
+
+    @keyframes pop{
+      from{ transform: translateY(10px) scale(.98); opacity:0; }
+      to{ transform: translateY(0) scale(1); opacity:1; }
+    }
+
+    .dialog-header{
+      padding: 18px 18px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 14px;
+      border-bottom: 1px solid rgba(27,27,31,.08);
+      position:sticky;
+      top:0;
+      background: rgba(255,255,255,.80);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      z-index:2;
+    }
+
+    .dialog-title{
+      margin:0;
+      font-family:"Lora", serif;
+      font-weight:600;
+      letter-spacing:.2px;
+      font-size: 22px;
+      line-height:1.15;
+    }
+
+    .close{
+      border:none;
+      width:42px; height:42px;
+      border-radius: 16px;
+      background: rgba(27,27,31,.06);
+      cursor:pointer;
+      transition: transform .18s ease, background .18s ease;
+      user-select:none;
+    }
+    .close:hover{
+      transform: translateY(-1px);
+      background: rgba(27,27,31,.10);
+    }
+
+    .dialog-body{
+      padding: 14px 18px 18px;
+      display:grid;
+      gap: 14px;
+    }
+
+    .full-desc{
+      margin:0;
+      color: rgba(27,27,31,.78);
+      line-height:1.85;
+      font-size: 14px;
+    }
+
+    .media{
+      display:grid;
+      grid-template-columns: 1.3fr .9fr;
+      gap: 14px;
+      align-items:start;
+    }
+
+    @media (max-width: 860px){
+      .media{ grid-template-columns: 1fr; }
+    }
+
+    /* Carousel */
+    .carousel{
+      border-radius: var(--r20);
+      border: 1px solid rgba(27,27,31,.10);
+      background: rgba(255,255,255,.70);
+      overflow:hidden;
+      position:relative;
+      box-shadow: 0 18px 60px rgba(20,10,18,.10);
+      min-height: 260px;
+    }
+
+    .carousel-stage{
+      position:relative;
+      height: 330px;
+      background:
+        radial-gradient(260px 160px at 30% 30%, rgba(255,90,165,.20), transparent 60%),
+        radial-gradient(300px 180px at 70% 30%, rgba(123,97,255,.18), transparent 60%),
+        linear-gradient(135deg, rgba(255,255,255,.9), rgba(255,255,255,.55));
+    }
+    @media (max-width: 640px){
+      .carousel-stage{ height: 260px; }
+    }
+
+    .carousel-stage img{
+      width:100%;
+      height:100%;
+      object-fit:contain; /* 改为 contain 以完整显示图片 */
+      display:block;
+      background: rgba(255,255,255,.1); /* 添加背景色以填充空白 */
+    }
+
+    .carousel-placeholder{
+      height:100%;
+      display:grid;
+      place-items:center;
+      color: rgba(27,27,31,.72);
+      font-size: 14px;
+      text-align:center;
+      padding: 18px;
+    }
+
+    .nav{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding: 0 10px;
+      pointer-events:none;
+    }
+    .nav button{
+      pointer-events:auto;
+      width:40px; height:40px;
+      border-radius: 16px;
+      border: 1px solid rgba(27,27,31,.12);
+      background: rgba(255,255,255,.74);
+      cursor:pointer;
+      transition: transform .18s ease, background .18s ease;
+      box-shadow: 0 12px 30px rgba(20,10,18,.10);
+      user-select:none;
+    }
+    .nav button:hover{ transform: translateY(-1px); background: rgba(255,255,255,.92); }
+    .nav button:disabled{ opacity:.4; cursor:not-allowed; }
+
+    .dots{
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      padding: 10px 10px 12px;
+      border-top: 1px solid rgba(27,27,31,.08);
+      background: rgba(255,255,255,.62);
+    }
+    .dot{
+      width:8px; height:8px;
+      border-radius: 999px;
+      border: 1px solid rgba(27,27,31,.18);
+      background: rgba(27,27,31,.12);
+      cursor:pointer;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .dot.is-active{
+      background: linear-gradient(135deg, rgba(255,90,165,.95), rgba(123,97,255,.75));
+      border-color: rgba(255,90,165,.35);
+      transform: scale(1.15);
+    }
+
+    /* Video */
+    .video-panel{
+      border-radius: var(--r20);
+      border: 1px solid rgba(27,27,31,.10);
+      background: rgba(255,255,255,.70);
+      overflow:hidden;
+      box-shadow: 0 18px 60px rgba(20,10,18,.10);
+    }
+
+    .video-head{
+      padding: 12px 12px 10px;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom: 1px solid rgba(27,27,31,.08);
+      background: rgba(255,255,255,.62);
+    }
+    .video-head .label{
+      display:flex; align-items:center; gap:8px;
+      font-size: 13px;
+      color: rgba(27,27,31,.82);
+      user-select:none;
+    }
+
+    .video-body{
+      padding: 10px 12px 12px;
+    }
+
+    video{
+      width:100%;
+      border-radius: 16px;
+      background: #000;
+      border: 1px solid rgba(27,27,31,.10);
+    }
+
+    /* 右下角隐藏惊喜按钮 */
+    .floating-egg{
+      position:fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 120;
+      width: 52px;
+      height: 52px;
+      border-radius: 18px;
+      border: 1px solid rgba(27,27,31,.12);
+      background: rgba(255,255,255,.75);
+      box-shadow: 0 20px 70px rgba(20,10,18,.18);
+      cursor:pointer;
+      display:grid;
+      place-items:center;
+      transition: transform .18s ease, background .18s ease;
+      user-select:none;
+    }
+    .floating-egg:hover{
+      transform: translateY(-2px) rotate(-2deg);
+      background: rgba(255,255,255,.92);
+    }
+
+    /* 彩蛋粒子层 */
+    .fx-layer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index: 200;
+      overflow:hidden;
+    }
+    .fx{
+      position:absolute;
+      font-size: 16px;
+      opacity:0;
+      transform: translate(-50%,-50%) scale(.9);
+      animation: floatUp 1.2s ease forwards;
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,.15));
+      will-change: transform, opacity;
+    }
+
+    @keyframes floatUp{
+      0%{ opacity:0; transform: translate(-50%,-30%) scale(.9); }
+      15%{ opacity:1; }
+      100%{ opacity:0; transform: translate(-50%,-180%) scale(1.2); }
+    }
+
+    /* 小彩蛋文案 toast */
+    .toast{
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      z-index: 210;
+      background: rgba(255,255,255,.84);
+      border: 1px solid rgba(27,27,31,.12);
+      box-shadow: 0 22px 70px rgba(20,10,18,.16);
+      border-radius: 18px;
+      padding: 10px 12px;
+      color: rgba(27,27,31,.86);
+      font-size: 13px;
+      line-height:1.6;
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .22s ease, transform .22s ease;
+    }
+    .toast.is-show{
+      opacity:1;
+      transform: translateX(-50%) translateY(-6px);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="wrap">
+      <div class="hero">
+        <div class="hero-left">
+          <div class="kicker">
+            <span class="pill">🕯️ 记录 只给我们</span>
+            <span class="pill">✨ 最好的我们</span>
+          </div>
+
+          <!-- 可自定义文案：页面主标题 -->
+          <h1 id="pageTitle">📔 我们的日常</h1>
+
+          <!-- 可自定义文案：页面副标题 -->
+          <p class="sub" id="pageSubtitle">每一个瞬间都值得被记住。</p>
+        </div>
+
+        <div class="hero-right">
+          <!-- 可自定义文案：欢迎语按钮（点击会展开提示） -->
+          <button class="tiny-btn" id="welcomeBtn" type="button">给你一封小小的欢迎信</button>
+
+          <!-- 小操作：一键随机打开一条回忆（可删） -->
+          <button class="tiny-btn" id="randomBtn" type="button">🎲 随机一段回忆</button>
+        </div>
+      </div>
+
+      <div class="hint" id="welcomeHint" aria-live="polite">
+        <strong>这个网页的内容要一直一直加下去</strong><br />
+        有的日子 可能时间过去了 但我们不会 把它们放在这里 随时都可以翻看 
+        相册的升级版 也许有一天 我们会忘记某个瞬间 但不会忘记我们曾经一起经历过什么 
+        这就是这个小小网页的意义了
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="grid" id="grid" aria-label="回忆卡片列表">
+      <!-- JS 动态生成卡片 -->
+    </section>
+  </main>
+
+  <!-- Modal -->
+  <div class="modal" id="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="backdrop" id="backdrop" aria-label="关闭弹窗"></div>
+
+    <article class="dialog" role="document">
+      <div class="dialog-header">
+        <h2 class="dialog-title" id="modalTitle">回忆标题</h2>
+        <button class="close" id="closeBtn" type="button" aria-label="关闭">✕</button>
+      </div>
+
+      <div class="dialog-body">
+        <p class="full-desc" id="modalDesc">完整描述</p>
+
+        <div class="media">
+          <!-- 图片轮播 -->
+          <div class="carousel" aria-label="图片轮播">
+            <div class="carousel-stage" id="carouselStage">
+              <!-- 如果没有图片：会显示占位 -->
+            </div>
+
+            <div class="nav">
+              <button id="prevBtn" type="button" aria-label="上一张">‹</button>
+              <button id="nextBtn" type="button" aria-label="下一张">›</button>
+            </div>
+
+            <div class="dots" id="dots" aria-label="轮播指示点">
+              <!-- JS 动态生成 -->
+            </div>
+          </div>
+
+          <!-- 视频区域（无视频时自动隐藏） -->
+          <div class="video-panel" id="videoPanel" aria-label="视频">
+            <div class="video-head">
+              <div class="label">🎞️ 这段影像</div>
+              <div class="label" style="opacity:.72">𝐼 𝒸𝒽𝑜𝑜𝓈𝑒 𝓎𝑜𝓊, 𝒶𝓁𝓌𝒶𝓎𝓈.</div>
+            </div>
+            <div class="video-body" id="videoBody">
+              <!-- JS 动态插入 video 或占位 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </article>
+  </div>
+
+
+  <button class="floating-egg" id="eggBtn" type="button" aria-label="隐藏小惊喜">♥</button>
+
+  <div class="fx-layer" id="fxLayer" aria-hidden="true"></div>
+  <div class="toast" id="toast" aria-live="polite"></div>
+
+  <script>
+  
+    const memories = [
+      {
+        id: "m1",
+        title: "第一次见面",
+        shortDesc: "那天的风很轻，但心跳很响",
+
+        fullDesc:
+        [
+          "迎着盛大太阳我们的爱心 感觉超级超级有意思",
+          "这还是第一次见宝宝画画 手好稳 画的比我好多了 特别的好看",
+          "宝宝的优点之一 雨伞折的特别整齐 可爱的不像话",
+          "可恶的双手 没有拍出宝宝的美 但是就这 还是好好看呀宝宝",
+          "在海边牵手 我们的爱也会和海风一样温柔吧 从朋友变成了恋人 我爱你 宝宝",
+          "这一面我们期待了很久 海边的宝宝是那么清晰又有点不真实 美的像电影里才会有的场景",
+          "这是回老家的火车上我们的牵手照 当时真觉得自己超级幸福 平时社恐的我 都抬头挺胸了 谢谢宝宝给了我这么多勇气和安全感",
+          "这张真的是拍出了身高的最高记录 一米八的大长腿宝宝 我们的头碰在一起 哇 这张图片真的绝 很喜欢 ",
+          "我们的名字写在海边上 就像刻印在大海的上 海水见证了我们的爱 ",
+        ],
+        thumb: "D:/手机传来东西/第一次见面/海边宝宝.jpg",
+        images: [
+          "D:/手机传来东西/第一次见面/爱心太阳.jpg", 
+          "D:/手机传来东西/第一次见面/宝宝画画.jpg", 
+          "D:/手机传来东西/第一次见面/宝宝折雨伞.jpg",
+          "D:/手机传来东西/第一次见面/大芬背景照.jpg",
+          "D:/手机传来东西/第一次见面/海边携手照.jpg",
+          "D:/手机传来东西/第一次见面/海边宝宝.jpg",
+          "D:/手机传来东西/第一次见面/牵手.jpg",
+          "D:/手机传来东西/第一次见面/海边影子照.jpg",
+          "D:/手机传来东西/第一次见面/沙滩我们名.jpg",
+        ],
+        videoSrc: "D:/手机传来东西/第一次见面/第一次见面视频.mp4" 
+      },
+
+    ];
+
+    // 可自定义：页面顶端文字
+    const PAGE_TITLE = "📔 我们的日常"; 
+    const PAGE_SUBTITLE = "每一个瞬间都值得被记住。";
+    const WELCOME_TEXT =
+      "hi 亲爱的宝宝 很荣幸和你有了以下的这些经历 与你在一起是我此生最大的幸运 琢磨着说什么样的话好些 但是爱好像不是靠说出来的 而是要用心去感受的 这个小小的网页 希望能成为我们回忆的一个方式 把我们一起经历过的点点滴滴都放在这里 以后无论我们在哪里 都可以随时打开它 看看我们曾经一起走过的路 经历过的事 还有那些美好瞬间 这就是我想送给你的礼物了 爱你的 我🧝‍♂️💕"; 
+
+    const grid = document.getElementById("grid");
+
+    const modal = document.getElementById("modal");
+    const backdrop = document.getElementById("backdrop");
+    const closeBtn = document.getElementById("closeBtn");
+
+    const modalTitle = document.getElementById("modalTitle");
+    const modalDesc = document.getElementById("modalDesc");
+
+    const carouselStage = document.getElementById("carouselStage");
+    const dotsWrap = document.getElementById("dots");
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    const videoPanel = document.getElementById("videoPanel");
+    const videoBody = document.getElementById("videoBody");
+
+    const pageTitleEl = document.getElementById("pageTitle");
+    const pageSubtitleEl = document.getElementById("pageSubtitle");
+    const welcomeBtn = document.getElementById("welcomeBtn");
+    const welcomeHint = document.getElementById("welcomeHint");
+    const randomBtn = document.getElementById("randomBtn");
+
+    const eggBtn = document.getElementById("eggBtn"); // EASTER_EGG_TRIGGER（按钮触发彩蛋）
+    const fxLayer = document.getElementById("fxLayer");
+    const toast = document.getElementById("toast");
+
+    let activeMemory = null;
+    let activeIndex = 0;
+
+    function setTopText(){
+      pageTitleEl.textContent = PAGE_TITLE;
+      pageSubtitleEl.textContent = PAGE_SUBTITLE;
+      welcomeHint.innerHTML = "<strong>欢迎来的我们的回忆录</strong><br />" + escapeHtml(WELCOME_TEXT);
+    }
+
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function pickSize(i){
+      const sizes = ["tall","medium","short","medium","tall","short"];
+      return sizes[i % sizes.length];
+    }
+
+    function buildCard(memory, i){
+      const card = document.createElement("article");
+      card.className = "card";
+      card.dataset.id = memory.id;
+      card.dataset.size = pickSize(i);
+
+      // 缩略图：如果有 thumb 字段则显示图片，否则显示占位符
+      const thumbContent = memory.thumb
+        ? `<img src="${memory.thumb}" alt="缩略图" loading="lazy" />`
+        : `<div class="thumb-placeholder">📸 图片占位（可替换为缩略图）</div>`;
+
+      card.innerHTML = `
+        <div class="thumb" aria-hidden="true">
+          <div class="card-top-badge">
+            <div class="mini-heart" title="点一下有惊喜" data-egg="1">♥</div>
+          </div>
+          ${thumbContent}
+        </div>
+
+        <div class="content">
+          <div class="title-row">
+            <h3>${escapeHtml(memory.title)}</h3>
+            <span class="tag">🔍 查看故事</span>
+          </div>
+
+          <p class="desc">${escapeHtml(memory.shortDesc)}</p>
+
+          <div class="spark">
+            <button class="cta" type="button" data-open="1">点击回忆</button>
+            <span class="twinkle">✨ 轻轻一点</span>
+          </div>
+        </div>
+      `;
+
+      // 点击卡片打开（点击内部按钮也一样）
+      card.addEventListener("click", (e) => {
+        const egg = e.target?.closest?.('[data-egg="1"]');
+        if (egg) {
+          // EASTER_EGG_TRIGGER（卡片小爱心触发彩蛋）
+          burstSweetness(e.clientX, e.clientY);
+          showToast(pickSweetLine());
+          e.stopPropagation();
+          return;
+        }
+        openMemory(memory.id);
+      });
+
+      return card;
+    }
+
+    function renderGrid(){
+      grid.innerHTML = "";
+      memories.forEach((m, i) => grid.appendChild(buildCard(m, i)));
+      setupScrollReveal();
+    }
+
+    function setupScrollReveal(){
+      const cards = Array.from(document.querySelectorAll(".card"));
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((en) => {
+          if (en.isIntersecting){
+            en.target.classList.add("is-visible");
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      cards.forEach((c) => io.observe(c));
+    }
+
+    function openMemory(id){
+      const m = memories.find(x => x.id === id);
+      if (!m) return;
+
+      activeMemory = m;
+      activeIndex = 0;
+
+      // 初次打开时先用第一个 slide（或 image）更新标题/描述。
+      const slideInfo = getSlideInfo(m, 0);
+      modalTitle.textContent = slideInfo.title;
+      modalDesc.textContent = slideInfo.desc;
+
+      renderCarousel(m.slides || m.images || []);
+      renderVideo(m.videoSrc);
+
+      modal.classList.add("is-open");
+      modal.setAttribute("aria-hidden","false");
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeModal(){
+      modal.classList.remove("is-open");
+      modal.setAttribute("aria-hidden","true");
+      document.body.style.overflow = "";
+      activeMemory = null;
+
+      // 停止视频播放（如果有）
+      const v = videoBody.querySelector("video");
+      if (v) {
+        v.pause();
+        v.currentTime = 0;
+      }
+    }
+
+    function renderCarousel(slides){
+      dotsWrap.innerHTML = "";
+      carouselStage.innerHTML = "";
+
+      const hasSlides = Array.isArray(slides) && slides.length > 0;
+
+      if (!hasSlides){
+        carouselStage.innerHTML = `
+          <div class="carousel-placeholder">
+            📷 暂无图片<br/>
+            <span style="opacity:.7">在 memories[i].images 里添加图片路径即可</span>
+          </div>
+        `;
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+      }
+
+      slides.forEach((_, idx) => {
+        const dot = document.createElement("button");
+        dot.className = "dot" + (idx === 0 ? " is-active" : "");
+        dot.type = "button";
+        dot.setAttribute("aria-label", `第 ${idx+1} 张`);
+        dot.addEventListener("click", () => setSlide(idx));
+        dotsWrap.appendChild(dot);
+      });
+
+      setSlide(0);
+      prevBtn.disabled = slides.length <= 1;
+      nextBtn.disabled = slides.length <= 1;
+    }
+
+    function getSlideInfo(memory, idx){
+      // 支持两种数据结构：
+      // 1) memory.slides = [{src, title, desc}, ...]
+      // 2) memory.images = ["path.jpg", ...]  + fullDesc 数组
+      const slides = Array.isArray(memory.slides) ? memory.slides : memory.images;
+      const len = Array.isArray(slides) ? slides.length : 0;
+      const safeIdx = len ? ((idx % len) + len) % len : 0;
+
+      const item = Array.isArray(slides) && len ? slides[safeIdx] : null;
+
+      const fullDescArr = Array.isArray(memory.fullDesc) ? memory.fullDesc : null;
+      const defaultDesc = fullDescArr
+        ? fullDescArr[0] ?? ""
+        : (typeof memory.fullDesc === "string" ? memory.fullDesc : "");
+
+      if (!item) {
+        return {
+          src: Array.isArray(memory.images) && memory.images[0] ? memory.images[0] : "",
+          title: memory.title,
+          desc: defaultDesc,
+        };
+      }
+
+      // 简单字符串数组（旧版 images）
+      if (typeof item === "string") {
+        return {
+          src: item,
+          title: `${memory.title} (${safeIdx + 1}/${len})`, // 自动在标题加上序号
+          desc: fullDescArr?.[safeIdx] ?? defaultDesc,
+        };
+      }
+
+      // 对象数组，支持不同标题/描述
+      return {
+        src: item.src || "",
+        title: item.title ?? `${memory.title} (${safeIdx + 1}/${len})`,
+        desc: item.desc ?? fullDescArr?.[safeIdx] ?? defaultDesc,
+      };
+    }
+
+    function setSlide(idx){
+      if (!activeMemory) return;
+
+      const slides = Array.isArray(activeMemory.slides) ? activeMemory.slides : activeMemory.images;
+      if (!Array.isArray(slides) || !slides.length) return;
+
+      activeIndex = (idx + slides.length) % slides.length;
+
+      const slide = getSlideInfo(activeMemory, activeIndex);
+
+      modalTitle.textContent = slide.title;
+      modalDesc.textContent = slide.desc;
+
+      carouselStage.innerHTML = `
+        <img
+          src="${slide.src}"
+          alt="回忆图片 ${activeIndex+1}"
+          loading="lazy"
+        />
+      `;
+
+      Array.from(dotsWrap.children).forEach((d, i) => {
+        d.classList.toggle("is-active", i === activeIndex);
+      });
+    }
+
+    function stepSlide(dir){
+      if (!activeMemory) return;
+      const slides = Array.isArray(activeMemory.slides) ? activeMemory.slides : activeMemory.images;
+      if (!Array.isArray(slides) || slides.length <= 1) return;
+      setSlide(activeIndex + dir);
+    }
+
+    function renderVideo(videoSrc){
+      const hasVideo = !!(videoSrc && String(videoSrc).trim().length > 0);
+
+      if (!hasVideo){
+        videoPanel.style.display = "none";
+        videoBody.innerHTML = "";
+        return;
+      }
+
+      videoPanel.style.display = "";
+      videoBody.innerHTML = `
+        <video controls preload="metadata" playsinline>
+          <!-- 将 src 替换为您的视频路径，如 videos/trip.mp4 -->
+          <source src="${videoSrc}" type="video/mp4" />
+          你的浏览器不支持 video 播放。
+        </video>
+      `;
+    }
+
+    function showToast(text){
+      toast.textContent = text;
+      toast.classList.add("is-show");
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toast.classList.remove("is-show"), 1800);
+    }
+
+    function pickSweetLine(){
+      const lines = [
+        "今天也要一起好好爱着",
+        "你一笑 世界都美好了",
+        "我们慢慢来在一起慢慢变老",
+        "这份回忆册里 全是我们的小确幸",
+        "未来的很多天 都想和你一起",
+        "我们的故事 还在继续写着呢",
+      ];
+      return lines[Math.floor(Math.random() * lines.length)];
+    }
+
+    function burstSweetness(x, y){
+      // EASTER_EGG_TRIGGER：这里是彩蛋效果（飘心/飘星星）
+      const glyphs = ["♥","✨","✦","✧","💗","🌟"];
+      const count = 18;
+
+      for (let i=0; i<count; i++){
+        const el = document.createElement("div");
+        el.className = "fx";
+        el.textContent = glyphs[Math.floor(Math.random() * glyphs.length)];
+
+        const dx = (Math.random() - 0.5) * 140;
+        const dy = (Math.random() - 0.2) * 40;
+
+        el.style.left = (x + dx) + "px";
+        el.style.top = (y + dy) + "px";
+        el.style.animationDelay = (Math.random() * 0.12) + "s";
+        el.style.color = Math.random() > 0.5 ? "rgba(255,90,165,.95)" : "rgba(123,97,255,.85)";
+
+        fxLayer.appendChild(el);
+        setTimeout(() => el.remove(), 1400);
+      }
+    }
+
+    // 事件绑定
+    prevBtn.addEventListener("click", () => stepSlide(-1));
+    nextBtn.addEventListener("click", () => stepSlide(1));
+
+    closeBtn.addEventListener("click", closeModal);
+    backdrop.addEventListener("click", closeModal);
+
+    document.addEventListener("keydown", (e) => {
+      if (!modal.classList.contains("is-open")) return;
+
+      if (e.key === "Escape") closeModal();
+      if (e.key === "ArrowLeft") stepSlide(-1);
+      if (e.key === "ArrowRight") stepSlide(1);
+    });
+
+    welcomeBtn.addEventListener("click", () => {
+      const isOpen = welcomeHint.style.display === "block";
+      welcomeHint.style.display = isOpen ? "none" : "block";
+      if (!isOpen) showToast("哈喽哈喽～ 这是给你的欢迎信哦");
+    });
+
+    randomBtn.addEventListener("click", () => {
+      const m = memories[Math.floor(Math.random() * memories.length)];
+      openMemory(m.id);
+    });
+
+    eggBtn.addEventListener("click", () => {
+      // EASTER_EGG_TRIGGER：右下角按钮触发彩蛋
+      const rect = eggBtn.getBoundingClientRect();
+      burstSweetness(rect.left + rect.width/2, rect.top + rect.height/2);
+      showToast(pickSweetLine());
+    });
+
+    // 初始化
+    setTopText();
+    renderGrid();
+  </script>
+</body>
+</html>
+
