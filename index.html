@@ -767,10 +767,39 @@
           "第一次见面/海边影子照.jpg",
           "第一次见面/沙滩我们名.jpg",
         ],
-        videoSrc: "第一次见面/lv_7591745074518674712_20260319221334.mp4" 
+        videoSrc: "//player.bilibili.com/player.html?bvid=BV17UAjzvE4N&page=1" 
       },
-      
+      {
+        id: "m2",
+        title: "第二次见面",
+        shortDesc: "那天的风很轻，但心跳很响",
 
+        fullDesc:
+        [
+          "迎着盛大太阳我们的爱心 感觉超级超级有意思",
+          "这还是第一次见宝宝画画 手好稳 画的比我好多了 特别的好看",
+          "宝宝的优点之一 雨伞折的特别整齐 可爱的不像话",
+          "可恶的双手 没有拍出宝宝的美 但是就这 还是好好看呀宝宝",
+          "在海边牵手 我们的爱也会和海风一样温柔吧 从朋友变成了恋人 我爱你 宝宝",
+          "这一面我们期待了很久 海边的宝宝是那么清晰又有点不真实 美的像电影里才会有的场景",
+          "这是回老家的火车上我们的牵手照 当时真觉得自己超级幸福 平时社恐的我 都抬头挺胸了 谢谢宝宝给了我这么多勇气和安全感",
+          "这张真的是拍出了身高的最高记录 一米八的大长腿宝宝 我们的头碰在一起 哇 这张图片真的绝 很喜欢 ",
+          "我们的名字写在海边上 就像刻印在大海的上 海水见证了我们的爱 ",
+        ],
+        thumb: "第一次见面/海边宝宝.jpg",
+        images: [
+          "第一次见面/爱心太阳.jpg", 
+          "第一次见面/宝宝画画1.jpg", 
+          "第一次见面/宝宝折雨伞.jpg",
+          "第一次见面/大芬背景照.jpg",
+          "第一次见面/海边携手照.jpg",
+          "第一次见面/海边宝宝.jpg",
+          "第一次见面/牵手.jpg",
+          "第一次见面/海边影子照.jpg",
+          "第一次见面/沙滩我们名.jpg",
+        ],
+        videoSrc: "//player.bilibili.com/player.html?bvid=BV1a8AnzNE55&page=1"
+      },
     ];
 
     // 页面顶端文字
@@ -1048,13 +1077,32 @@
       }
 
       videoPanel.style.display = "";
-      videoBody.innerHTML = `
-        <video controls preload="metadata" playsinline>
-          <!-- 将 src 替换为您的视频路径，如 videos/trip.mp4 -->
-          <source src="${videoSrc}" type="video/mp4" />
-          你的浏览器不支持 video 播放。
-        </video>
-      `;
+      let realSrc = videoSrc.trim();
+      if (realSrc.startsWith("//")) {
+        realSrc = "https:" + realSrc;
+      }
+      const isBili = /player\.bilibili\.com/i.test(realSrc);
+      if (isBili) {
+        videoBody.innerHTML = `
+          <iframe
+            src="${realSrc}"
+            scrolling="no"
+            border="0"
+            frameborder="0"
+            framespacing="0"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            allowfullscreen="true"
+            style="width:100%;height:560px;min-height:360px;"
+          ></iframe>
+        `;
+      } else {
+        videoBody.innerHTML = `
+          <video controls preload="metadata" playsinline style="width:100%;max-height:80vh;">
+            <source src="${realSrc}" type="video/mp4" />
+            你的浏览器不支持 video 播放。
+          </video>
+        `;
+      }
     }
 
     function showToast(text){
